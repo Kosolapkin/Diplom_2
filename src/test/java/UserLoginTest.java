@@ -3,6 +3,7 @@ import io.qameta.allure.junit4.DisplayName;
 import org.example.pojo.UserCreateAndEditRequest;
 import org.example.pojo.UserLoginRequest;
 import org.example.steps.UserSteps;
+import org.junit.After;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -12,6 +13,13 @@ public class UserLoginTest {
     public static String email = "misha.drozhzhin@yandex.ru";
     public static String password = "qwerty123";
     public static String name = "Михаил";
+
+    @After
+    public  void deleteUser() {
+        UserSteps userSteps = new UserSteps();
+        UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+        userSteps.userDeleteAfterLogin(userLoginRequest);
+    }
 
     @Test
     @DisplayName("Логин под существующим пользователем")
@@ -29,7 +37,6 @@ public class UserLoginTest {
                 .and()
                 .statusCode(200);
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
@@ -49,7 +56,6 @@ public class UserLoginTest {
                 .and()
                 .statusCode(401);
 
-        userSteps.userDeleteAfterLogin(userRightLoginRequest);
     }
 
     @Test
@@ -69,7 +75,6 @@ public class UserLoginTest {
                 .and()
                 .statusCode(401);
 
-        userSteps.userDeleteAfterLogin(userRightLoginRequest);
     }
 
 }
