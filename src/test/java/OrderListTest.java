@@ -4,6 +4,7 @@ import org.example.pojo.UserCreateAndEditRequest;
 import org.example.pojo.UserLoginRequest;
 import org.example.steps.OrderSteps;
 import org.example.steps.UserSteps;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.List;
@@ -17,10 +18,23 @@ public class OrderListTest {
     public static String password = "qwerty123";
     public static String name = "Михаил";
 
+    private boolean skipDeleteUser = false;
+
+    @After
+    public  void deleteUser() {
+        if (!skipDeleteUser) {
+            UserSteps userSteps = new UserSteps();
+            UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+            userSteps.userDeleteAfterLogin(userLoginRequest);
+        }
+    }
+
     @Test
     @DisplayName("Получение списка заказов без авторизации")
     @Description("Проверка не возможности получения списка заказов без авторизации")
     public void orderListWithoutAuthorization() {
+
+        skipDeleteUser = true;
 
         OrderSteps orderSteps = new OrderSteps();
 
@@ -48,7 +62,6 @@ public class OrderListTest {
                 .and()
                 .statusCode(200);;
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
 }
