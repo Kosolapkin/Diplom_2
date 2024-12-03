@@ -5,6 +5,7 @@ import org.example.pojo.UserCreateAndEditRequest;
 import org.example.pojo.UserLoginRequest;
 import org.example.steps.OrderSteps;
 import org.example.steps.UserSteps;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -19,6 +20,22 @@ public class OrderCreateTest {
     public static String password = "qwerty123";
     public static String name = "Михаил";
     public static List<String> ingredients = new ArrayList<>();
+
+    private boolean skipDeleteUser = false;
+    
+    @After
+    public  void deleteUser() {
+        UserSteps userSteps = new UserSteps();
+        UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+        userSteps.userDeleteAfterLogin(userLoginRequest);
+    }
+
+    @After
+    public void ingredientsClean() {
+        if (!skipDeleteUser) {
+            ingredients.clear();
+        }
+    }
 
     @Test
     @DisplayName("Создание заказа после авторизации")
@@ -40,8 +57,6 @@ public class OrderCreateTest {
                 .and()
                 .statusCode(200);;
 
-        ingredients.clear();
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
@@ -50,7 +65,6 @@ public class OrderCreateTest {
     public void orderCreateWithoutAuthorization() {
 
         UserCreateAndEditRequest userCreateRequest = new UserCreateAndEditRequest(email, password, name);
-        UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
         ingredients.add("61c0c5a71d1f82001bdaaa6d");
         OrderCreateRequest orderCreateRequest = new OrderCreateRequest(ingredients);
         UserSteps userSteps = new UserSteps();
@@ -64,14 +78,14 @@ public class OrderCreateTest {
                 .and()
                 .statusCode(200);;
 
-        ingredients.clear();
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
     @DisplayName("Создание заказа после авторизации без ингредиентов")
     @Description("Проверка не возможности создания заказа после авторизации без ингредиентов")
     public void orderCreateWithAuthorizationWithoutIngredients() {
+
+        skipDeleteUser = true;
 
         UserCreateAndEditRequest userCreateRequest = new UserCreateAndEditRequest(email, password, name);
         UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
@@ -85,7 +99,6 @@ public class OrderCreateTest {
                 .and()
                 .statusCode(400);;
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
@@ -105,10 +118,6 @@ public class OrderCreateTest {
         orderSteps.orderCreateAfterLogin(userLoginRequest, orderCreateRequest)
                 .assertThat().statusCode(500);
 
-        ingredients.clear();
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
-
-
 
 }
