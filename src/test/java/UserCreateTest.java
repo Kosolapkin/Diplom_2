@@ -3,6 +3,7 @@ import io.qameta.allure.junit4.DisplayName;
 import org.example.pojo.UserCreateAndEditRequest;
 import org.example.pojo.UserLoginRequest;
 import org.example.steps.UserSteps;
+import org.junit.After;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -12,6 +13,17 @@ public class UserCreateTest {
     public static String email = "misha.drozhzhin@yandex.ru";
     public static String password = "qwerty123";
     public static String name = "Михаил";
+
+    private boolean skipDeleteUser = false;
+
+    @After
+    public  void deleteUser() {
+        if (!skipDeleteUser) {
+            UserSteps userSteps = new UserSteps();
+            UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+            userSteps.userDeleteAfterLogin(userLoginRequest);
+        }
+    }
 
     @Test
     @DisplayName("Создание уникального пользователя")
@@ -27,7 +39,6 @@ public class UserCreateTest {
                 .and()
                 .statusCode(200);
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
@@ -46,13 +57,14 @@ public class UserCreateTest {
                 .and()
                 .statusCode(403);
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
     @DisplayName("Создание пользователя без поля email")
     @Description("Проверка не возможности создать пользователя без поля email")
     public void createUserWithoutEmail() {
+
+        skipDeleteUser = true;
 
         UserCreateAndEditRequest userCreateAndEditRequest = new UserCreateAndEditRequest(null, password, name);
         UserSteps userSteps = new UserSteps();
@@ -68,6 +80,8 @@ public class UserCreateTest {
     @Description("Проверка не возможности создать пользователя без поля password")
     public void createUserWithoutPassword() {
 
+        skipDeleteUser = true;
+
         UserCreateAndEditRequest userCreateAndEditRequest = new UserCreateAndEditRequest(email, null, name);
         UserSteps userSteps = new UserSteps();
 
@@ -81,6 +95,8 @@ public class UserCreateTest {
     @DisplayName("Создание пользователя без поля name")
     @Description("Проверка не возможности создать пользователя без поля name")
     public void createUserWithoutName() {
+
+        skipDeleteUser = true;
 
         UserCreateAndEditRequest userCreateAndEditRequest = new UserCreateAndEditRequest(email, password, null);
         UserSteps userSteps = new UserSteps();
