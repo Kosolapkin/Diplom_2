@@ -3,6 +3,7 @@ import io.qameta.allure.junit4.DisplayName;
 import org.example.pojo.UserCreateAndEditRequest;
 import org.example.pojo.UserLoginRequest;
 import org.example.steps.UserSteps;
+import org.junit.After;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -16,6 +17,13 @@ public class UserEditTest {
     public static String newEmail = "ivan.drozhzhin@yandex.ru";
     public static String newPassword = "qwerty1234";
     public static String newName = "Иван";
+
+    @After
+    public  void deleteUser() {
+        UserSteps userSteps = new UserSteps();
+        UserLoginRequest userLoginRequest = new UserLoginRequest(email, password);
+        userSteps.userDeleteAfterLogin(userLoginRequest);
+    }
 
     @Test
     @DisplayName("Обновление email с авторизацией")
@@ -37,7 +45,6 @@ public class UserEditTest {
                 .and()
                 .statusCode(200);
 
-        userSteps.userDeleteAfterLogin(userNewLoginRequest);
     }
 
     @Test
@@ -57,7 +64,6 @@ public class UserEditTest {
                 .and()
                 .statusCode(401);
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
@@ -83,7 +89,6 @@ public class UserEditTest {
                 .and()
                 .statusCode(200);
 
-        userSteps.userDeleteAfterLogin(userNewLoginRequest);
     }
 
     @Test
@@ -103,7 +108,6 @@ public class UserEditTest {
                 .and()
                 .statusCode(401);
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
@@ -125,7 +129,6 @@ public class UserEditTest {
                 .and()
                 .statusCode(200);
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
     @Test
@@ -145,7 +148,6 @@ public class UserEditTest {
                 .and()
                 .statusCode(401);
 
-        userSteps.userDeleteAfterLogin(userLoginRequest);
     }
 
 }
